@@ -5,10 +5,10 @@ from datetime import datetime
 class StudentGoal (db.Model):
 	__table_args__ = {'sqlite_autoincrement': True}
 	id = db.Column(db.Integer, primary_key=True)
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	goal_title = db.Column(db.String(140))
+	student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	title = db.Column(db.String(140))
 	description = db.Column(db.String(250))
-	timestamp = db.Column(db.DateTime, index=True, default=datetime.now())
+	date_due = db.Column(db.DateTime, index=True, default=datetime.now())
 	completed = db.Column(db.Boolean, unique=False, default=False)
 	
 	def __repr__(self):

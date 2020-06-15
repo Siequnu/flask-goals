@@ -10,12 +10,26 @@ from app.models import User
 
 
 # Main overview of student goals
-@bp.route("/view/")
+@bp.route("/view")
 @login_required
 def view_goals():
 	if current_user.is_authenticated and app.models.is_admin(current_user.username):
 		goals = StudentGoal.query.all()
-		return render_template('view_goals.html', goals=goals)
+		students = User.query.filter_by(is_admin = False).all()
+		return render_template('view_goals.html', goals=goals, students = students)
+	abort(403)
+
+
+# Get an individual student's goals
+@bp.route("/view/<student_id>")
+@login_required
+def view_student_goals(student_id):
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		student = User.query.get(student_id)
+		if student is None:
+			abort (404)
+		goals = StudentGoal.query.filter_by(student_id = student_id).all()
+		return render_template('view_student_goals.html', goals = goals, student = student)
 	abort(403)
 
 
@@ -30,7 +44,7 @@ def add_goal_find_student():
 
 
 # Create a new goal
-@bp.route("/add/<student_id>")
+@bp.route("/add/<student_id>", methods = ['GET', 'POST'])
 @login_required
 def add_goal(student_id):
 	# View a list of consultations
@@ -42,10 +56,15 @@ def add_goal(student_id):
 			return redirect(url_for('goals.view_goals'))
 		else:
 			if form.validate_on_submit():
-				goal = StudentGoal()
-				goal.save()
+				goal = StudentGoal(
+					title = form.title.data,
+					description = form.description.data,
+					student_id = student.id,
+					date_due = form.datefield.data
+				)
+				goal.add()
 				flash ('Goal saved', 'success')
-				return redirect(url_for('goals.view_goals'))
+				return redirect(url_for('goals.view_student_goals', student_id = student.id))
 			return render_template('add_goal.html', form = form, title = 'Add student goal', student = student)
 	else:
 		abort (403)

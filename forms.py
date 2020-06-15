@@ -7,4 +7,6 @@ class StudentGoalForm(FlaskForm):
                         DataRequired(), Length(max=140)])
     description = StringField('Goal description:', validators=[
                               DataRequired(), Length(max=250)])
+    datefield = DateField('Goal due on:', format='%Y-%m-%d',
+                          validators=[DataRequired()])
     submit = SubmitField('Save student goal')
