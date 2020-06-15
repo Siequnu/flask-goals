@@ -18,8 +18,8 @@ class StudentGoal (db.Model):
 		db.session.add(self)
 		db.session.commit()
 
-	def complete(self):
-		self.completed = True
+	def toggle_status(self):
+		self.completed = not self.completed
 		db.session.commit ()
 
 	def delete (self):

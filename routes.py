@@ -71,3 +71,24 @@ def add_goal(student_id):
 			return render_template('add_goal.html', form = form, title = 'Add student goal', student = student)
 	else:
 		abort (403)
+
+
+# Admin redirect route to mark a goal as completed
+@bp.route("/completed/<goal_id>")
+@login_required
+def toggle_goal_status(goal_id):
+	# View a list of consultations
+	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+		goal = StudentGoal.query.get(goal_id)
+		if goal is None:
+			flash('Could not locate this goal.', 'error')
+			return redirect(url_for('goals.view_goals'))
+		
+		student = User.query.get(goal.student_id)
+		if student is None:
+			flash('Could not locate this student.', 'error')
+			return redirect(url_for('goals.view_goals'))
+		goal.toggle_status()
+		return redirect (url_for('goals.view_student_goals', student_id = student.id))
+	else:
+		abort (403)

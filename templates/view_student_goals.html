@@ -51,6 +51,15 @@
         <li class="list-group-item {{'list-group-item-success' if goal.completed else 'list-group-item'}}" aria-disabled="true">
           <h6>{{goal.date_due.strftime('%d %b %Y')}}, {{goal.title}}</h6>
           <p>{{goal.description}}</p>
+          {% if current_user.is_admin %}
+          <a href="{{url_for('goals.toggle_goal_status', goal_id = goal.id)}}" 
+          {% if goal.completed == True %}
+            <button class="btn btn-outline-secondary"><i class="fa fa-undo"></i> Reset milestone</button> 
+          {% else %}
+            <button class="btn btn-outline-success"><i class="fa fa-check"></i> Reached milestone</button>  
+          {% endif %}
+          </a>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
