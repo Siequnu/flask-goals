@@ -34,3 +34,6 @@ def delete_all_student_goals_from_user_id(user_id):
 		for goal in goals:
 			db.session.delete(goal)
 	db.session.commit()
+
+def get_student_goals_from_user_id (user_id):
+	return StudentGoal.query.filter_by(student_id = user_id).all()

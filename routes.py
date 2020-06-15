@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, abort, current_app, session, Response
 from flask_login import current_user, login_required
 
-from . import bp
+from . import bp, models
 from .models import StudentGoal
 from .forms import StudentGoalForm
 
@@ -13,22 +13,25 @@ from app.models import User
 @bp.route("/view")
 @login_required
 def view_goals():
-	if current_user.is_authenticated and app.models.is_admin(current_user.username):
+	if app.models.is_admin(current_user.username):
 		goals = StudentGoal.query.all()
 		students = User.query.filter_by(is_admin = False).all()
 		return render_template('view_goals.html', goals=goals, students = students)
-	abort(403)
+	else:
+		return redirect(url_for('goals.view_student_goals', student_id = current_user.id))
 
 
 # Get an individual student's goals
-@bp.route("/view/<student_id>")
+@bp.route("/view/<int:student_id>")
 @login_required
 def view_student_goals(student_id):
-	if current_user.is_authenticated and app.models.is_admin(current_user.username):
-		student = User.query.get(student_id)
-		if student is None:
-			abort (404)
-		goals = StudentGoal.query.filter_by(student_id = student_id).all()
+	goals = models.get_student_goals_from_user_id (student_id)
+	if goals is None: abort (404)
+	student = User.query.get(student_id)
+	if student is None: abort (404)
+	print (current_user.id)
+	print (student_id)
+	if app.models.is_admin(current_user.username) or current_user.id == student_id:
 		return render_template('view_student_goals.html', goals = goals, student = student)
 	abort(403)
 

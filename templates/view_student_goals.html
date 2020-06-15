@@ -13,8 +13,10 @@
   </div>
 </div>
 <hr>
+{% if current_user.is_admin %}
 <a href="{{url_for('goals.add_goal', student_id = student.id)}}" <button class="btn btn-lg btn-outline-success"><i class="fa fa-plus-circle"></i> Add new goal</button></a>
 <br><br>
+{% endif %}
 <!-- Milestones widget -->
 <div class="row text-center">
   <div class="col">
@@ -35,6 +37,24 @@
           {% endfor %}
         </div>
       </div>
+    </div>
+  </div>
+</div>
+<br>
+<!-- Detailed milestones view -->
+<div class="row text-center">
+  <div class="col">
+    <div class="counter">
+      <div class="container">
+      <ul class="list-group">
+        {% for goal in goals %}
+        <li class="list-group-item {{'list-group-item-success' if goal.completed else 'list-group-item'}}" aria-disabled="true">
+          <h6>{{goal.date_due.strftime('%d %b %Y')}}, {{goal.title}}</h6>
+          <p>{{goal.description}}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
     </div>
   </div>
 </div>
