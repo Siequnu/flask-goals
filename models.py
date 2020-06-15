@@ -7,10 +7,24 @@ class StudentGoal (db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	goal_title = db.Column(db.String(140))
+	description = db.Column(db.String(250))
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.now())
+	completed = db.Column(db.Boolean, unique=False, default=False)
 	
 	def __repr__(self):
 		return '<Student Goal {}>'.format(self.id)
+
+	def add (self):
+		db.session.add(self)
+		db.session.commit()
+
+	def complete(self):
+		self.completed = True
+		db.session.commit ()
+
+	def delete (self):
+		db.session.delete(self)
+		db.session.commit()
 
 
 # Delete all records of a grammar check
