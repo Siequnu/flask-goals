@@ -29,8 +29,6 @@ def view_student_goals(student_id):
 	if goals is None: abort (404)
 	student = User.query.get(student_id)
 	if student is None: abort (404)
-	print (current_user.id)
-	print (student_id)
 	if app.models.is_admin(current_user.username) or current_user.id == student_id:
 		return render_template('view_student_goals.html', goals = goals, student = student)
 	abort(403)
