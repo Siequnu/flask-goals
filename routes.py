@@ -2,11 +2,13 @@ from flask import render_template, flash, redirect, url_for, request, abort, cur
 from flask_login import current_user, login_required
 
 from . import bp, models
-from .models import StudentGoal
+from .models import StudentGoal, StudentGoalTemplate
 from .forms import StudentGoalForm
 
 import app.models
 from app.models import User
+
+import json
 
 
 # Main overview of student goals
@@ -14,9 +16,10 @@ from app.models import User
 @login_required
 def view_goals():
 	if app.models.is_admin(current_user.username):
+		student_goals_info_array = models.get_all_goals_info ()
 		goals = StudentGoal.query.all()
 		students = User.query.filter_by(is_admin = False).all()
-		return render_template('view_goals.html', goals=goals, students = students)
+		return render_template('view_goals.html', student_goals_info_array = student_goals_info_array, goals=goals, students = students)
 	else:
 		return redirect(url_for('goals.view_student_goals', student_id = current_user.id))
 
@@ -29,8 +32,9 @@ def view_student_goals(student_id):
 	if goals is None: abort (404)
 	student = User.query.get(student_id)
 	if student is None: abort (404)
+	goal_templates = StudentGoalTemplate.query.all ()
 	if app.models.is_admin(current_user.username) or current_user.id == student_id:
-		return render_template('view_student_goals.html', goals = goals, student = student)
+		return render_template('view_student_goals.html', goals = goals, student = student, goal_templates = goal_templates)
 	abort(403)
 
 
@@ -71,6 +75,24 @@ def add_goal(student_id):
 		abort (403)
 
 
+
+# Remove goal
+@bp.route("/remove/<int:goal_id>")
+@login_required
+def remove_goal(goal_id):
+	if app.models.is_admin(current_user.username):
+		goal = StudentGoal.query.get(goal_id)
+		student = User.query.get (goal.student_id)
+		if goal is None:
+			flash ('Could not find this goal.', 'error')
+		else:
+			goal.delete ()
+			flash ('Goal deleted successfully.', 'success')
+		return redirect (url_for('goals.view_student_goals', student_id = student.id))
+	else:
+		abort (403)
+
+
 # Admin redirect route to mark a goal as completed
 @bp.route("/completed/<goal_id>")
 @login_required
@@ -88,5 +110,77 @@ def toggle_goal_status(goal_id):
 			return redirect(url_for('goals.view_goals'))
 		goal.toggle_status()
 		return redirect (url_for('goals.view_student_goals', student_id = student.id))
+	else:
+		abort (403)
+
+
+# Goal template management
+@bp.route("/templates")
+@login_required
+def manage_goal_templates():
+	if app.models.is_admin(current_user.username):
+		student_goal_templates = StudentGoalTemplate.query.all() # These are saved as JSON.stringify from the API
+		parsed_templates = []
+		for template in student_goal_templates:
+			parsed_templates.append ({
+				'id': template.id,
+				'title': template.title,
+				'template_data': json.loads (template.template_data)
+			})
+		return render_template('manage_goal_templates.html', student_goal_templates = parsed_templates)
+	else:
+		abort (403)
+
+# Apply a goal template
+@bp.route("/template/<int:template_id>/apply/<int:user_id>")
+@login_required
+def apply_goal_template(template_id, user_id):
+	if app.models.is_admin(current_user.username):
+		student_goal_template = StudentGoalTemplate.query.get(template_id)
+		user = User.query.get (user_id)
+
+		if student_goal_template is None or user is None:
+			flash ('Could not find the template or user', 'warning')
+			return redirect (url_for ('goals.view_goals'))
+		
+		parsed_template_data = json.loads (student_goal_template.template_data)
+		for goal in parsed_template_data:
+			print (goal)
+			new_goal = StudentGoal (
+				student_id = user_id,
+				title = goal['title'],
+				description = goal['description'],
+				date_due = goal['datefield']
+			)
+			new_goal.add ()
+		flash ('Applied the ' + student_goal_template.title + ' template to ')
+		return redirect (url_for('goals.view_student_goals', student_id = user_id))
+	else:
+		abort (403)
+
+
+# Add goal template
+@bp.route("/templates/add")
+@login_required
+def add_goal_template():
+	if app.models.is_admin(current_user.username):
+		form = StudentGoalForm ()
+		return render_template('add_goal_template.html', form = form)
+	else:
+		abort (403)
+
+
+# Remove goal template
+@bp.route("/templates/remove/<int:template_id>")
+@login_required
+def remove_goal_template(template_id):
+	if app.models.is_admin(current_user.username):
+		template = StudentGoalTemplate.query.get(template_id)
+		if template is None:
+			flash ('Could not find this template.', 'error')
+		else:
+			template.delete ()
+			flash ('Template deleted successfully.', 'success')
+		return redirect (url_for('goals.manage_goal_templates'))
 	else:
 		abort (403)

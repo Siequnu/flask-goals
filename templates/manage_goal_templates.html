@@ -1,0 +1,78 @@
+{% extends "header.html" %} {% block app_content %}
+{% from 'bootstrap/form.html' import render_form %}
+
+<link rel="stylesheet" href="/static/css/progress-circle.css">
+
+<!-- Activate the popover to see goal template descriptions on mouseover -->
+<script>
+  $(function () { $('[data-toggle="popover"]').popover() })
+</script>
+
+<!-- Page titles and action buttons -->
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <button type="button" class="btn btn-lg btn-outline-secondary float-right" data-toggle="modal"
+        data-target="#helpModal">
+        <i class="fa fa-info"></i>
+      </button>
+      <h1><i class="fa fa-tasks"></i> Manage goal templates</h1>
+    </div>
+  </div>
+  <hr>
+  <a href="{{url_for('goals.view_goals')}}" <button class="btn btn-lg mr-3 btn-outline-dark"><i
+      class="fa fa-chevron-left"></i> Back to goals</button></a>
+
+  <a href="{{url_for('goals.add_goal_template')}}" <button class="btn btn-lg btn-outline-success"><i
+      class="fa fa-plus-circle"></i> Add new goal template</button></a>
+
+
+  <br><br>
+
+
+  <!-- Help modal -->
+  <div class="modal fade" id="helpModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1 class="display-5"><i class="fa fa-tasks"></i> Goal templates</h1>
+          <p class="lead">Here you can create a set of goals that can easily be applied to many students, saving you
+            time and effort.
+          </p>
+          <hr class="my-4">
+          <p>For example, you could set a UCAS 2020 goal template, which might include personal statement, reference and
+            transcript items.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main page content -->
+  <div class="row text-center">
+    {% for goal_template in student_goal_templates %}
+    <div class="goal-template-card col-12 col-md-12 mb-3" data-goal-template-title="{{goal_template.title}}">
+      <a href="{{url_for('goals.remove_goal_template', template_id = goal_template.id)}}" <button class="btn btn-sm m-3 float-right btn-outline-warning"><i
+          class="fa fa-trash-alt"></i> Delete this template</button></a>
+      <a class=" text-dark" href="#">
+        <div class="counter">
+          <h3>{{goal_template.title}} <i class="fa fa-chevron-right"></i></h3>
+      </a>
+      <div class="progress m-3" style="height: 40px">
+        {% for goal in goal_template.template_data %}
+        <div class="progress-bar" role="progressbar"
+          style="width: {{100/goal_template.template_data|length}}%; background-color: rgb({{range(0, 255) | random}}, {{range(0, 255) | random}}, {{range(0, 255) | random}});""
+            data-toggle="popover" data-trigger="hover" title="{{goal.datefield}}" data-content="{{goal.description}}">
+          {{goal.datefield}}: {{goal.title}}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
