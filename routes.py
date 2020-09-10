@@ -145,7 +145,6 @@ def apply_goal_template(template_id, user_id):
 		
 		parsed_template_data = json.loads (student_goal_template.template_data)
 		for goal in parsed_template_data:
-			print (goal)
 			new_goal = StudentGoal (
 				student_id = user_id,
 				title = goal['title'],
