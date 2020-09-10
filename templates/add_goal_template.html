@@ -170,14 +170,17 @@
       });
       
       // Convert the template data into a JSON object
-      template_data = JSON.stringify (template_data);
-      
+      template_data = JSON.stringify(template_data);
+
+      // Get the csrf token
+      const csrftoken = Cookies.get('_csrf_token');
+
       // Send data via AJAX
       $.ajax({
         type: "POST",
         url: "/api/v1/goals/template",
         contentType: 'application/json',
-        headers: { 'key': config.apiKey },
+        headers: { 'key': config.apiKey, 'X-CSRFToken': csrftoken },
         data: JSON.stringify({
           title: template_title,
           template_data: template_data
