@@ -54,7 +54,7 @@ def delete_all_student_goals_from_user_id(user_id):
 
 # Get specific goals from a student id
 def get_student_goals_from_user_id (user_id):
-	return StudentGoal.query.filter_by(student_id = user_id).order_by(StudentGoal.data_due.asc()).all()
+	return StudentGoal.query.filter_by(student_id = user_id).order_by(StudentGoal.date_due.asc()).all()
 
 # Get goal complete percentage from user id
 def get_complete_goal_information_from_user_id (user_id):
