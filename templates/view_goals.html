@@ -21,10 +21,12 @@
       <div class="modal-content">
         <div class="modal-body">
           <h1 class="display-5"><i class="fa fa-bullseye"></i> Goals</h1>
-          <p class="lead">In this section, you can get an overview of your students' progress towards their application goals
+          <p class="lead">In this section, you can get an overview of your students' progress towards their application
+            goals
           </p>
           <hr class="my-4">
-          <p>You can set individual goals for each student by clicking "Add new goal", or you can create goal templates to quickly apply the same set of goals to many students.</p>
+          <p>You can set individual goals for each student by clicking "Add new goal", or you can create goal templates
+            to quickly apply the same set of goals to many students.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -35,15 +37,15 @@
 
 
 
-  <a href="{{url_for('goals.add_goal_find_student')}}" <button class="btn btn-lg mr-3 btn-outline-success"><i
-      class="fa fa-plus-circle"></i> Add new goal</button></a>
+  <a href="{{url_for('goals.add_goal_find_student')}}"><button class="btn m-1 btn-outline-success"><i
+        class="fa fa-plus-circle"></i> Add new goal</button></a>
 
-  <a href="{{url_for('goals.manage_goal_templates')}}" <button class="btn btn-lg btn-outline-primary"><i
-      class="fa fa-tasks"></i> Manage default goal templates</button></a>
-  <br><br>
+  <a href="{{url_for('goals.manage_goal_templates')}}"><button class="btn m-1 btn-outline-primary"><i
+        class="fa fa-tasks"></i> Manage default goal templates</button></a>
+  <br>
 
   <link rel="stylesheet" href="/static/css/form-control-borderless.css">
-  <div class="row justify-content-left">
+  <div class="row justify-content-left mt-1 mb-1">
     <div class="col-12 col-md-10 col-lg-8">
       <form class="card">
         <div class="card-body row no-gutters align-items-center">
@@ -73,8 +75,9 @@
       <a class="text-dark" href="{{ url_for('goals.view_student_goals', student_id = student.id) }}">
         <div class="counter">
           <h3>{{student.username}} <i class="fa fa-chevron-right"></i></h3>
-          <a href="{{url_for('goals.add_goal', student_id = student.id)}}" <button
-            class="btn mt-5 mb-5 btn-lg btn-outline-primary"><i class="fa fa-plus-circle"></i> Add new goal</button></a>
+          <a href="{{url_for('goals.add_goal', student_id = student.id)}}"><button
+              class="btn mt-5 mb-5 btn-lg btn-outline-primary"><i class="fa fa-plus-circle"></i> Add new
+              goal</button></a>
         </div>
       </a>
       {% else %}
@@ -102,7 +105,8 @@
       // If the search field is empty, only show student cards with some goals
       if (!$('#myInput').val()) {
         $('.student-goal-card').show(); // Show all inputs
-        $('.student-goal-card').filter('[data-student-goals-data="False"]').hide(); // Hide the ones we don't want
+        $('.student-goal-card').filter('[data-student-goals-data="False"]')
+      .hide(); // Hide the ones we don't want
       } else {
         // If thre are values, filter them out
         var value = $(this).val().toLowerCase();
